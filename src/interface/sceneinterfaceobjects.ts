@@ -9,4 +9,8 @@ export interface completePackage {
     engine: Engine
     scenePackage: ScenePackage
 }
+export interface Action {
+    type: State
+    
+}
     
