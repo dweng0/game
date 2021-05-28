@@ -23,30 +23,13 @@
 
         <script src="https://cdn.babylonjs.com/babylon.js"></script>
         <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
-        <script src="app.js"></script>
         <script src="https://code.jquery.com/pep/0.4.3/pep.js"></script>
+        
     </head>
 
    <body>
-
-    <canvas id="renderCanvas" touch-action="none"></canvas> <!-- touch-action="none" for best results from PEP -->
-
-    <script>
-    
-
-        const scene = createScene(); //Call the createScene function
-
-        // Register a render loop to repeatedly render the scene
-        engine.runRenderLoop(function () {
-                scene.render();
-        });
-
-        // Watch for browser/canvas resize events
-        window.addEventListener("resize", function () {
-                engine.resize();
-        });
-    </script>
-
+    <canvas id="renderCanvas" touch-action="none"></canvas> <!-- touch-action="none" for best results from PEP --> 
+    <script src="/js/app.js"></script>  
    </body>
 
 </html>
