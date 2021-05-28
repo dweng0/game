@@ -22,13 +22,14 @@ class Application {
         const packages = create(this.canvas, newScenePackage)
         
         this.engine = packages.engine;
+      
         
         //add new scene 
         this.addStatePackage(State.START, packages.scenePackage);
         
         //subscribe to state changes
         this.store.subscribe(() => this.switchSceneByState(this.store.getState().value));
-        
+
         //handle resize
         window.addEventListener("resize", () => {
             this.engine.resize();
@@ -42,20 +43,31 @@ class Application {
         return this.statePackages.splice(state, 1, scenePackage);
     }
 
-    switchSceneByState(state: State) {
+    switchSceneByState(state: State): void {
         
         //check if scene exists in our list of scenes
         const statePackage = this.statePackages[state];
 
         if(!statePackage) {
+            
             throw new Error('State package not available, has is been created yet?');
         }
-
+        statePackage.scene.debugLayer.show();
+        this.handleLoading(statePackage.scene);
         this.engine.runRenderLoop(() => { 
             statePackage.scene.render();
         });
     }
-}
 
+    handleLoading(scene: Scene): void {
+        this.engine.displayLoadingUI();
+        scene.whenReadyAsync()
+        .then(() => this.engine.hideLoadingUI())
+        .catch((e: any) => { 
+            console.log(e);
+            throw new Error('There was an error loading the scene!');
+        });
+    }
+}
 
 new Application();
