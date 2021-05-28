@@ -9,8 +9,11 @@ class MenuService {
      * @param scene the scene to add the menu to
      * @param menuData the data to render
      */
-    static buildMenu(scene: Scene, menuData: Menu): AdvancedDynamicTexture { 
-
+    static buildMenu(scene: Scene, menuData?: Menu): void { 
+        if(!menuData) { 
+            return
+        }
+        
         const menu = AdvancedDynamicTexture.CreateFullscreenUI(menuData.name, true, scene);
             
         let iterator = 1;
@@ -30,7 +33,6 @@ class MenuService {
             menu.addControl(btn);
             iterator++;
         });
-      return menu;
 
     }
 }

@@ -15,22 +15,29 @@ class Application {
     private statePackages: Array<ScenePackage> = [];
     private engine: Engine;
     private store: any;
+    private sceneFactory: SceneFactory;
         
     constructor() { 
 
+        //attach to canvas
         this.canvas = document.getElementById("renderCanvas") as HTMLCanvasElement;
+
+        //create a store for our state
         this.store = createStore(stateReducer);    
+
+        //init the scene factory
+        this.sceneFactory = new SceneFactory(this.store);
+
+        //build out the first package
+        const packages =  this.sceneFactory.create(this.canvas, this.sceneFactory.newScenePackage);
         
-        const { create, newScenePackage } = SceneFactory;
-        const packages = create(this.canvas, newScenePackage)
-        
+        //pull engine from package
         this.engine = packages.engine;
         
         //add new scene 
+        //todo this array can be returned from the scene factory instead of handled here.
         this.addStatePackage(State.START, packages.scenePackage);
-        
-        MenuService.buildMenu(packages.scenePackage.scene, menuData);
-                
+                        
         //subscribe to state changes
         this.store.subscribe(() => this.switchSceneByState(this.store.getState().value));
 
