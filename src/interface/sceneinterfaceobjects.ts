@@ -13,4 +13,18 @@ export interface Action {
     type: State
     
 }
+export interface MenuItem { 
+    id: string,
+    label: string
+    child?: MenuItem
+}
+
+export interface Menu { 
+    name: string,
+    children: Array<MenuItem>
+    width: string,
+    height: string,
+    background: string,
+    color: string
+}
     

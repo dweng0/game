@@ -1,10 +1,13 @@
 
 import SceneFactory from './service/scenefactory';
+import MenuService from './service/menuservice';
+
 import { ScenePackage } from './interface/sceneinterfaceobjects';
 import { Scene, Engine } from '@babylonjs/core';
 import { State } from './interface/state';
-import { createStore, StoreCreator } from 'redux';
+import { createStore } from 'redux';
 import { stateReducer } from './reducers';
+import { menuData } from './data/menu';
 
 class Application { 
     
@@ -22,11 +25,12 @@ class Application {
         const packages = create(this.canvas, newScenePackage)
         
         this.engine = packages.engine;
-      
         
         //add new scene 
         this.addStatePackage(State.START, packages.scenePackage);
         
+        MenuService.buildMenu(packages.scenePackage.scene, menuData);
+                
         //subscribe to state changes
         this.store.subscribe(() => this.switchSceneByState(this.store.getState().value));
 
@@ -44,15 +48,12 @@ class Application {
     }
 
     switchSceneByState(state: State): void {
-        
         //check if scene exists in our list of scenes
         const statePackage = this.statePackages[state];
 
-        if(!statePackage) {
-            
+        if(!statePackage) {            
             throw new Error('State package not available, has is been created yet?');
         }
-        statePackage.scene.debugLayer.show();
         this.handleLoading(statePackage.scene);
         this.engine.runRenderLoop(() => { 
             statePackage.scene.render();
