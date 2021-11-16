@@ -1,10 +1,13 @@
 
 import SceneFactory from './service/scenefactory';
+import MenuService from './service/menuservice';
+
 import { ScenePackage } from './interface/sceneinterfaceobjects';
 import { Scene, Engine } from '@babylonjs/core';
 import { State } from './interface/state';
-import { createStore, StoreCreator } from 'redux';
+import { createStore } from 'redux';
 import { stateReducer } from './reducers';
+import { menuData } from './data/menu';
 
 class Application { 
     
@@ -12,21 +15,29 @@ class Application {
     private statePackages: Array<ScenePackage> = [];
     private engine: Engine;
     private store: any;
+    private sceneFactory: SceneFactory;
         
     constructor() { 
 
+        //attach to canvas
         this.canvas = document.getElementById("renderCanvas") as HTMLCanvasElement;
+
+        //create a store for our state
         this.store = createStore(stateReducer);    
+
+        //init the scene factory
+        this.sceneFactory = new SceneFactory(this.store);
+
+        //build out the first package
+        const packages =  this.sceneFactory.create(this.canvas, this.sceneFactory.newScenePackage);
         
-        const { create, newScenePackage } = SceneFactory;
-        const packages = create(this.canvas, newScenePackage)
-        
+        //pull engine from package
         this.engine = packages.engine;
-      
         
         //add new scene 
+        //todo this array can be returned from the scene factory instead of handled here.
         this.addStatePackage(State.START, packages.scenePackage);
-        
+                        
         //subscribe to state changes
         this.store.subscribe(() => this.switchSceneByState(this.store.getState().value));
 
@@ -44,15 +55,12 @@ class Application {
     }
 
     switchSceneByState(state: State): void {
-        
         //check if scene exists in our list of scenes
         const statePackage = this.statePackages[state];
 
-        if(!statePackage) {
-            
+        if(!statePackage) {            
             throw new Error('State package not available, has is been created yet?');
         }
-        statePackage.scene.debugLayer.show();
         this.handleLoading(statePackage.scene);
         this.engine.runRenderLoop(() => { 
             statePackage.scene.render();
